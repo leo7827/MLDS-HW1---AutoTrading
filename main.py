@@ -14,6 +14,7 @@ student_df = pd.DataFrame(data)
 print(student_df.to_csv('student_demo.csv'))
 '''
 import csv
+import pandas as pd
 import numpy as np
 if __name__ == "__main__":
     # You should not modify this part.
@@ -25,9 +26,7 @@ if __name__ == "__main__":
     parser.add_argument("--output", default="output.csv", help="output file name")
     args = parser.parse_args()
 
-    # The following part is an example.
-    # You can modify it at will.
-iCount = 0
+iCount = 0  #天數
 iCount_ForLoop = 0  # 總計抓了幾筆的trainingData   1年或是半年
 fTotal = 0.0;
 fAvg = 0.0  # 均線
@@ -68,33 +67,42 @@ with open(path, newline='', encoding="utf-8") as csvfile1:
             iCount = iCount + 1
             continue
         fcloseStock_Today = float(row[3])  # 只看收盤價
-        if fcloseStock_Today > fcloseStock_Yesday and istock < 1 and iSTs < 2:    #收盤價連續漲2天 且 可買進
-            istock = istock + 1
-            iSTs = iSTs + 1
-            List.append(1)
-        elif fcloseStock_Today < fcloseStock_Yesday and istock > -1 and iSTs < 2:  #收盤價連續跌2天 且 可以賣出
-            istock = istock - 1
-            iSTs = iSTs - 1
-            List.append(-1)
+        if fcloseStock_Today > fcloseStock_Yesday and istock < 1 and iSTs < 3:    #收盤價連續漲2天 且 可買進
+            if (iSTs == 2):
+                istock = istock + 1
+                List.append(1)
+            else:
+                iSTs = iSTs + 1
+                List.append(0)
+        elif fcloseStock_Today < fcloseStock_Yesday and istock > -1 and iSTs < 3:  #收盤價連續跌2天 且 可以賣出
+            if (iSTs == -2):
+                istock = istock - 1
+                List.append(-1)
+            else:
+                iSTs = iSTs - 1
+                List.append(0)
         else:
             List.append(0)
-        # print(row[3])
+
+        print('收盤價:' + str(fcloseStock_Today))
         print('庫藏股:' + str(istock))
         print(List)
         fcloseStock_Yesday = fcloseStock_Today
         iCount = iCount + 1
 
 # 產生output
-with open('output.csv', 'w', newline='', encoding="utf-8") as csvfile:
+with open('output1.csv', 'w', newline='', encoding="utf-8") as csvfile:
     # 建立 CSV 檔寫入器
-    writer = csv.writer(csvfile)
+    writer = csv.writer(csvfile, dialect='unix')
+    #Test = List[2]
 
-    Test = List[2]
-    # writer.writerow(str(Test))
-    # print(Test)
     for i in range(0, 19):
         # writer.writerow([a])
         # writer.writerow('a')
-        # print(Test)
-        writer.writerow(str(List[i]))
+        writer.writerow([List[i]])
+        #writer.writerow(str(List[i]))
+
+        #print(Test)
+
+
 
